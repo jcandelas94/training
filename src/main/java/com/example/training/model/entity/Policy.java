@@ -1,24 +1,31 @@
 package com.example.training.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
+
 public class Policy {
 
-    private String polizaId;
-    private String descripcion;
+    @Setter
+    @Getter
+    @JsonProperty("polizaId")
+    private String policyId;
 
-    // Getters y setters
-    public String getPolizaId() {
-        return polizaId;
-    }
+    @Setter
+    @Getter
+    @JsonProperty("descripcion")
+    private String description;
 
-    public void setPolizaId(String polizaId) {
-        this.polizaId = polizaId;
-    }
+    @Setter
+    @Getter
+    @JsonProperty("coberturas")
+    private List<String> coverages;
 
-    public String getDescripcion() {
-        return descripcion;
-    }
+    @Setter
+    @Getter
+    @JsonProperty("condiciones")
+    private List<String> conditions;
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
 }

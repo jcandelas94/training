@@ -19,7 +19,7 @@ public class PoliciesService {
         this.restTemplate = restTemplate;
     }
 
-    public PolicyWrapperDto listarPolizas(String dni) {
+    public PolicyWrapperDto getPolicies(String dni) {
         String url = wiremockUrl1 + "/polizas?dni=" + dni;
         Policy[] policies = this.restTemplate.getForObject(url, Policy[].class);
 
@@ -30,10 +30,25 @@ public class PoliciesService {
                 .build();
     }
 
+    public PolicyWrapperDto getPolicyById(String policyId) {
+        String url = wiremockUrl1 + "/polizas/" + policyId;
+        Policy policy = this.restTemplate.getForObject(url, Policy.class);
+
+        if (policy != null) {
+            PolicyDto policyDto = new PolicyDto(policy.getPolicyId(), policy.getDescription(), policy.getCoverages());
+            return PolicyWrapperDto.builder()
+                    .policies(List.of(policyDto))
+                    .build();
+        }
+        return PolicyWrapperDto.builder()
+                .policies(List.of())
+                .build();
+    }
+
     private List<PolicyDto> mapToPolicyDto(Policy[] policies) {
         return policies != null ?
                 List.of(policies).stream()
-                        .map(policy -> new PolicyDto(policy.getPolizaId(), policy.getDescripcion()))
+                        .map(policy -> new PolicyDto(policy.getPolicyId(), policy.getDescription()))
                         .collect(Collectors.toList()) :
                 List.of();
     }
