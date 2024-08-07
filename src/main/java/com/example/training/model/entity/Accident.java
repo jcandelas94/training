@@ -9,7 +9,12 @@ public class Accident {
     @Setter
     @Getter
     @JsonProperty("siniestroId")
-    private String claimId;
+    private String accidentId;
+
+    @Setter
+    @Getter
+    @JsonProperty("estado")
+    private String status;
 
     @Setter
     @Getter

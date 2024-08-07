@@ -9,17 +9,16 @@ public class PolicyDto {
 
     private String policyId;
     private String description;
+    private List<String> coverages;
     private List<String> conditions;
-
-
-    public PolicyDto(String polizaId, String descripcion) {
-        this.policyId = polizaId;
-        this.description = descripcion;
+    public PolicyDto(String policyId, String description) {
+        this.policyId = policyId;
+        this.description = description;
     }
 
-    public PolicyDto(String polizaId, String descripcion, List<String> condiciones) {
-        this.policyId = polizaId;
-        this.description = descripcion;
-        this.conditions = condiciones;
+    public PolicyDto(String policyId, String description, List<String> coverages) {
+        this.policyId = policyId;
+        this.description = description;
+        this.coverages = coverages;
     }
 }
