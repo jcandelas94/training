@@ -35,9 +35,4 @@ public class AccidentsService {
                         .collect(Collectors.toList()) :
                 List.of();
     }
-
-
-
-
-
 }

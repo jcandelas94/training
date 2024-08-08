@@ -5,6 +5,7 @@ import com.example.training.model.dto.PolicyDto;
 import com.example.training.model.dto.PolicyWrapperDto;
 import com.example.training.model.entity.Policy;
 import com.example.training.proxy.PoliciesProxyService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,9 +19,10 @@ public class PoliciesService {
         this.policiesProxyService = policiesProxyService;
     }
 
-    public PolicyWrapperDto getPolicies(String dni) {
+    @PreAuthorize("#userId == authentication.name")
+    public PolicyWrapperDto getPolicies(String userId) {
 
-        var policies = policiesProxyService.getPolicies(dni);
+        var policies = policiesProxyService.getPolicies(userId);
         List<PolicyDto> policyDtos = mapToPolicyDto(policies);
 
         return PolicyWrapperDto.builder()
@@ -59,6 +61,4 @@ public class PoliciesService {
                         .collect(Collectors.toList()) :
                 List.of();
     }
-
-
 }

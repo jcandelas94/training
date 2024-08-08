@@ -1,9 +1,12 @@
 package com.example.training.controller;
 
+import com.example.training.model.dto.AccidentDto;
 import com.example.training.model.dto.PolicyConditionsDto;
 import com.example.training.model.dto.PolicyWrapperDto;
+import com.example.training.service.AccidentsService;
 import com.example.training.service.PoliciesService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,27 +15,48 @@ import java.util.List;
 @RequestMapping("/policies")
 public class PoliciesController {
 
-    private final PoliciesService polizaService;
+    private final PoliciesService policyService;
+    private final AccidentsService accidentsService;
 
-    public PoliciesController(PoliciesService polizaService) {
-        this.polizaService = polizaService;
+
+    public PoliciesController(PoliciesService policiesService, AccidentsService accidentsService) {
+        this.policyService = policiesService;
+        this.accidentsService = accidentsService;
     }
 
-    // http://localhost:8080/policies?dni=666
+    // http://localhost:8080/policies
     @GetMapping
-    public PolicyWrapperDto getPolicies(@RequestParam String dni) {
-        return polizaService.getPolicies(dni);
+    public PolicyWrapperDto getPolicies() {
+        String userId = getUserIdFromContext();
+        return policyService.getPolicies(userId);
     }
 
     // http://localhost:8080/policies/666
     @GetMapping("/{policyNumber}")
     public PolicyWrapperDto getPolicyById(@PathVariable String policyNumber) {
-        return polizaService.getPolicyById(policyNumber);
+        return policyService.getPolicyById(policyNumber);
     }
 
     // http://localhost:8080/policies/666/conditions
     @GetMapping("/{policyNumber}/conditions")
     public List<PolicyConditionsDto> getPolicyConditions(@PathVariable String policyNumber) {
-        return polizaService.getPolicyConditions(policyNumber);
+        return policyService.getPolicyConditions(policyNumber);
+    }
+
+    // http://localhost:8080/policies/666/accidents
+    @GetMapping("/{policyNumber}/accidents")
+    public List<AccidentDto> getAccidentsByPolicy(@PathVariable String policyNumber) {
+        return accidentsService.getAccidentsByPolicy(policyNumber);
+    }
+
+    @GetMapping("/accidents/{accidentId}")
+    public AccidentDto getAccidentById(@PathVariable String accidentId) {
+        return accidentsService.getAccidentById(accidentId);
+    }
+
+    // http://localhost:8080/policies/accidents/666
+    private String getUserIdFromContext() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
     }
 }
