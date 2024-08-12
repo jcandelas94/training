@@ -5,6 +5,7 @@ import com.example.training.model.dto.PolicyDto;
 import com.example.training.model.dto.PolicyWrapperDto;
 import com.example.training.model.entity.Policy;
 import com.example.training.proxy.PoliciesProxyService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -20,6 +21,7 @@ public class PoliciesService {
     }
 
     @PreAuthorize("#userId == authentication.name")
+    @Cacheable(value = "policiesCache")
     public PolicyWrapperDto getPolicies(String userId) {
 
         var policies = policiesProxyService.getPolicies(userId);

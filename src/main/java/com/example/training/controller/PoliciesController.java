@@ -26,35 +26,30 @@ public class PoliciesController {
     }
 
     // http://localhost:8080/policies
-//    @Cacheable(value = "policiesCache", key = "#userId")
     @GetMapping
     public PolicyWrapperDto getPolicies() {
         String userId = getUserIdFromContext();
         return policyService.getPolicies(userId);
     }
 
-    // http://localhost:8080/policies/666
-//    @Cacheable(value = "policyCache", key = "#policyNumber")
+    // http://localhost:8080/policies/12345666
     @GetMapping("/{policyNumber}")
     public PolicyWrapperDto getPolicyById(@PathVariable String policyNumber) {
         return policyService.getPolicyById(policyNumber);
     }
 
-    // http://localhost:8080/policies/666/conditions
-//    @Cacheable(value = "policyConditionsCache", key = "#policyNumber")
+    // http://localhost:8080/policies/12345666/conditions
     @GetMapping("/{policyNumber}/conditions")
     public List<PolicyConditionsDto> getPolicyConditions(@PathVariable String policyNumber) {
         return policyService.getPolicyConditions(policyNumber);
     }
 
-    // http://localhost:8080/policies/666/accidents
-//    @Cacheable(value = "accidentsCache", key = "#policyNumber")
+    // http://localhost:8080/policies/12345666/accidents
     @GetMapping("/{policyNumber}/accidents")
     public List<AccidentDto> getAccidentsByPolicy(@PathVariable String policyNumber) {
         return accidentsService.getAccidentsByPolicy(policyNumber);
     }
 
-//    @Cacheable(value = "accidentCache", key = "#accidentId")
     @GetMapping("/accidents/{accidentId}")
     public AccidentDto getAccidentById(@PathVariable String accidentId) {
         return accidentsService.getAccidentById(accidentId);
