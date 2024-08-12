@@ -5,6 +5,7 @@ import com.example.training.model.dto.PolicyConditionsDto;
 import com.example.training.model.dto.PolicyWrapperDto;
 import com.example.training.service.AccidentsService;
 import com.example.training.service.PoliciesService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,7 @@ public class PoliciesController {
     }
 
     // http://localhost:8080/policies
+//    @Cacheable(value = "policiesCache", key = "#userId")
     @GetMapping
     public PolicyWrapperDto getPolicies() {
         String userId = getUserIdFromContext();
@@ -32,23 +34,27 @@ public class PoliciesController {
     }
 
     // http://localhost:8080/policies/666
+//    @Cacheable(value = "policyCache", key = "#policyNumber")
     @GetMapping("/{policyNumber}")
     public PolicyWrapperDto getPolicyById(@PathVariable String policyNumber) {
         return policyService.getPolicyById(policyNumber);
     }
 
     // http://localhost:8080/policies/666/conditions
+//    @Cacheable(value = "policyConditionsCache", key = "#policyNumber")
     @GetMapping("/{policyNumber}/conditions")
     public List<PolicyConditionsDto> getPolicyConditions(@PathVariable String policyNumber) {
         return policyService.getPolicyConditions(policyNumber);
     }
 
     // http://localhost:8080/policies/666/accidents
+//    @Cacheable(value = "accidentsCache", key = "#policyNumber")
     @GetMapping("/{policyNumber}/accidents")
     public List<AccidentDto> getAccidentsByPolicy(@PathVariable String policyNumber) {
         return accidentsService.getAccidentsByPolicy(policyNumber);
     }
 
+//    @Cacheable(value = "accidentCache", key = "#accidentId")
     @GetMapping("/accidents/{accidentId}")
     public AccidentDto getAccidentById(@PathVariable String accidentId) {
         return accidentsService.getAccidentById(accidentId);

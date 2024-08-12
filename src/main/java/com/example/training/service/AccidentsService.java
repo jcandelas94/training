@@ -35,4 +35,12 @@ public class AccidentsService {
                         .collect(Collectors.toList()) :
                 List.of();
     }
+
+    public boolean isAccidentOwnedByPolicy(String accidentId, String policyId) {
+        // Obtener los siniestros de la póliza usando AccidentsProxyService
+        List<AccidentDto> accidents = getAccidentsByPolicy(policyId);
+
+        // Verificar si alguno de los siniestros tiene el accidentId solicitado
+        return accidents.stream().anyMatch(accident -> accident.getAccidentId().equals(accidentId));
+    }
 }

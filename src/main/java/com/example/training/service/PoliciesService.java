@@ -61,4 +61,9 @@ public class PoliciesService {
                         .collect(Collectors.toList()) :
                 List.of();
     }
+
+    public boolean isPolicyOwnedByUser(String policyId, String userId) {
+        List<PolicyDto> userPolicies = getPolicies(userId).getPolicies();
+        return userPolicies.stream().anyMatch(policy -> policy.getPolicyId().equals(policyId));
+    }
 }
