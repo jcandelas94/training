@@ -5,6 +5,8 @@ import com.example.training.model.dto.PolicyDto;
 import com.example.training.model.dto.PolicyWrapperDto;
 import com.example.training.model.entity.Policy;
 import com.example.training.proxy.PoliciesProxyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
 public class PoliciesService {
 
     private final PoliciesProxyService policiesProxyService;
+    private static final Logger log = LoggerFactory.getLogger(PoliciesService.class);
 
     public PoliciesService(PoliciesProxyService policiesProxyService) {
         this.policiesProxyService = policiesProxyService;
@@ -23,6 +26,8 @@ public class PoliciesService {
     @PreAuthorize("#userId == authentication.name")
     @Cacheable(value = "policiesCache")
     public PolicyWrapperDto getPolicies(String userId) {
+
+        log.info("Executing getPolicies for user: {}", userId);
 
         var policies = policiesProxyService.getPolicies(userId);
         List<PolicyDto> policyDtos = mapToPolicyDto(policies);
@@ -64,8 +69,10 @@ public class PoliciesService {
                 List.of();
     }
 
+    @Cacheable(value = "policiesOwnershipCache")
     public boolean isPolicyOwnedByUser(String policyId, String userId) {
         List<PolicyDto> userPolicies = getPolicies(userId).getPolicies();
+        log.info("Executing isPolicyOwnedByUser for user: {}", userId);
         return userPolicies.stream().anyMatch(policy -> policy.getPolicyId().equals(policyId));
     }
 }

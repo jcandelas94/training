@@ -24,6 +24,5 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public CacheManager cacheManager() {
-        return new ConcurrentMapCacheManager("policiesCache");
-    }
+        return new ConcurrentMapCacheManager("policiesCache", "policiesOwnershipCache");    }
 }

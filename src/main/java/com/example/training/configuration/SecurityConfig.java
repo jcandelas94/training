@@ -27,12 +27,16 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        UserDetails user = User.withUsername("666")
+        UserDetails user1 = User.withUsername("00000000A")
                 .password("{noop}666")
                 .roles("USER")
                 .build();
 
-        return new InMemoryUserDetailsManager(user);
-    }
+        UserDetails user2 = User.withUsername("88888888B")
+                .password("{noop}666")
+                .roles("USER")
+                .build();
 
+        return new InMemoryUserDetailsManager(user1, user2);
+    }
 }
