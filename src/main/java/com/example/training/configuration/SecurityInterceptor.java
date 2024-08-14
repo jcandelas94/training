@@ -38,9 +38,12 @@ public class SecurityInterceptor implements HandlerInterceptor {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "No tienes permiso para acceder a esta póliza.");
                 return false;
             }
-            if (accidentId != null && policyNumber != null && !accidentsService.isAccidentOwnedByPolicy(accidentId, policyNumber)) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "No tienes permiso para acceder a este siniestro.");
-                return false;
+            if (accidentId != null && policyNumber != null) {
+                if (!policiesService.isPolicyOwnedByUser(policyNumber, authenticatedUserId) ||
+                        !accidentsService.isAccidentOwnedByPolicy(accidentId, policyNumber)) {
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "No tienes permiso para acceder a este siniestro.");
+                    return false;
+                }
             }
         }
 

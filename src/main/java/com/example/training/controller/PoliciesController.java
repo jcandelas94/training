@@ -46,8 +46,8 @@ public class PoliciesController {
         return accidentsService.getAccidentsByPolicy(policyNumber);
     }
 
-    @GetMapping("/accidents/{accidentId}")
-    public AccidentDto getAccidentById(@PathVariable String accidentId) {
+    @GetMapping("/{policyNumber}/accidents/{accidentId}")
+    public AccidentDto getAccidentById(@PathVariable String policyNumber, @PathVariable String accidentId) {
         return accidentsService.getAccidentById(accidentId);
     }
 
