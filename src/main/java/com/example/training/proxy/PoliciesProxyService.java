@@ -1,34 +1,36 @@
 package com.example.training.proxy;
 
+import com.example.training.client.PoliciesClient;
 import com.example.training.model.entity.Policy;
+import feign.Feign;
+import feign.jackson.JacksonDecoder;
+import feign.okhttp.OkHttpClient;
+import feign.slf4j.Slf4jLogger;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 public class PoliciesProxyService {
 
-    private final RestTemplate restTemplate;
-    private final String wiremockUrl1 = "http://localhost:8081";
+    private final PoliciesClient policiesClient;
 
-    public PoliciesProxyService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public PoliciesProxyService() {
+        this.policiesClient = Feign.builder()
+                .client(new OkHttpClient())
+                .decoder(new JacksonDecoder())
+                .logger(new Slf4jLogger(PoliciesClient.class))
+                .logLevel(feign.Logger.Level.FULL)
+                .target(PoliciesClient.class, "http://localhost:8081");
     }
 
     public Policy[] getPolicies(String dni) {
-        Policy[] policies;
-        String url = wiremockUrl1 + "/polizas?dni=" + dni;
-        return policies = this.restTemplate.getForObject(url, Policy[].class);
+        return policiesClient.getPolicies(dni);
     }
 
     public Policy getPolicyById(String policyId) {
-        Policy policy;
-        String url = wiremockUrl1 + "/polizas/" + policyId;
-        return policy = this.restTemplate.getForObject(url, Policy.class);
+        return policiesClient.getPolicyById(policyId);
     }
 
     public String[] getPolicyConditions(String policyId) {
-        String[] conditions;
-        String url = wiremockUrl1 + "/polizas/" + policyId + "/condiciones";
-        return conditions = this.restTemplate.getForObject(url, String[].class);
+        return policiesClient.getPolicyConditions(policyId);
     }
 }
