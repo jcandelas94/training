@@ -31,16 +31,13 @@ public class AccidentsService {
     private List<AccidentDto> mapToAccidentDto(Accident[] accidents) {
         return accidents != null ?
                 List.of(accidents).stream()
-                        .map(accident -> new AccidentDto(accident.getAccidentId(), accident.getStatus()))
+                        .map(accident -> new AccidentDto(accident.getAccidentId(), accident.getDescription(), accident.getStatus()))
                         .collect(Collectors.toList()) :
                 List.of();
     }
 
     public boolean isAccidentOwnedByPolicy(String accidentId, String policyId) {
-        // Obtener los siniestros de la póliza usando AccidentsProxyService
         List<AccidentDto> accidents = getAccidentsByPolicy(policyId);
-
-        // Verificar si alguno de los siniestros tiene el accidentId solicitado
         return accidents.stream().anyMatch(accident -> accident.getAccidentId().equals(accidentId));
     }
 }
