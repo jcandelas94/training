@@ -1,11 +1,15 @@
 package com.example.training.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PolicyDto {
 
@@ -14,14 +18,4 @@ public class PolicyDto {
     private List<String> coverages;
     private List<String> conditions;
 
-    public PolicyDto(String policyId, String description) {
-        this.policyId = policyId;
-        this.description = description;
-    }
-
-    public PolicyDto(String policyId, String description, List<String> coverages) {
-        this.policyId = policyId;
-        this.description = description;
-        this.coverages = coverages;
-    }
 }
