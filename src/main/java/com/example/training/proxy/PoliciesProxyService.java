@@ -29,8 +29,4 @@ public class PoliciesProxyService {
     public Policy getPolicyById(String policyId) {
         return policiesClient.getPolicyById(policyId);
     }
-
-    public String[] getPolicyConditions(String policyId) {
-        return policiesClient.getPolicyConditions(policyId);
-    }
 }

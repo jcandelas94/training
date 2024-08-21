@@ -1,29 +1,33 @@
 package com.example.training.proxy;
 
+import com.example.training.client.AccidentsClient;
 import com.example.training.model.entity.Accident;
+import feign.Feign;
+import feign.jackson.JacksonDecoder;
+import feign.okhttp.OkHttpClient;
+import feign.slf4j.Slf4jLogger;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 public class AccidentsProxyService {
 
-    private final RestTemplate restTemplate;
-    private final String wiremockUrl1 = "http://localhost:8081";
+    private final AccidentsClient accidentsClient;
 
-    public AccidentsProxyService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public AccidentsProxyService() {
+        this.accidentsClient = Feign.builder()
+                .client(new OkHttpClient())
+                .decoder(new JacksonDecoder())
+                .logger(new Slf4jLogger(AccidentsClient.class))
+                .logLevel(feign.Logger.Level.FULL)
+                .target(AccidentsClient.class, "http://localhost:8081");
     }
 
     public Accident[] getAccidentsByPolicy(String policyId) {
-        Accident[] accidents;
-        String url = wiremockUrl1 + "/polizas/" + policyId + "/siniestros";
-        return accidents = this.restTemplate.getForObject(url, Accident[].class);
+        return accidentsClient.getAccidentsByPolicy(policyId);
     }
 
     public Accident getAccidentById(String accidentId) {
-        Accident accident;
-        String url = wiremockUrl1 + "/siniestros/" + accidentId;
-        return accident = this.restTemplate.getForObject(url, Accident.class);
+        return accidentsClient.getAccidentById(accidentId);
     }
 
 }

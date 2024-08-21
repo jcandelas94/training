@@ -1,6 +1,5 @@
 package com.example.training.service;
 
-import com.example.training.model.dto.PolicyConditionsDto;
 import com.example.training.model.dto.PolicyDto;
 import com.example.training.model.dto.PolicyWrapperDto;
 import com.example.training.model.entity.Policy;
@@ -49,16 +48,6 @@ public class PoliciesService {
         return PolicyWrapperDto.builder()
                 .policies(List.of())
                 .build();
-    }
-
-    public List<PolicyConditionsDto> getPolicyConditions(String policyId) {
-        var conditions = policiesProxyService.getPolicyConditions(policyId);
-
-        if (conditions != null) {
-            PolicyConditionsDto policyConditionsDto = new PolicyConditionsDto(List.of(conditions));
-            return List.of(policyConditionsDto);
-        }
-        return List.of();
     }
 
     private List<PolicyDto> mapToPolicyDto(Policy[] policies) {

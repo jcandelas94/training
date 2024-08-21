@@ -1,11 +1,9 @@
 package com.example.training.controller;
 
 import com.example.training.model.dto.AccidentDto;
-import com.example.training.model.dto.PolicyConditionsDto;
 import com.example.training.model.dto.PolicyWrapperDto;
 import com.example.training.service.AccidentsService;
 import com.example.training.service.PoliciesService;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -34,11 +32,6 @@ public class PoliciesController {
     @GetMapping("/{policyNumber}")
     public PolicyWrapperDto getPolicyById(@PathVariable String policyNumber) {
         return policyService.getPolicyById(policyNumber);
-    }
-
-    @GetMapping("/{policyNumber}/conditions")
-    public List<PolicyConditionsDto> getPolicyConditions(@PathVariable String policyNumber) {
-        return policyService.getPolicyConditions(policyNumber);
     }
 
     @GetMapping("/{policyNumber}/accidents")
