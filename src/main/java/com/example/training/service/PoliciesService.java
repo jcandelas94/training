@@ -1,10 +1,13 @@
 package com.example.training.service;
 
+import com.example.training.client.PoliciesClient;
 import com.example.training.mapper.PolicyMapper;
 import com.example.training.model.dto.PolicyDto;
-import com.example.training.model.dto.PolicyWrapperDto;
 import com.example.training.model.entity.Policy;
-import com.example.training.proxy.PoliciesProxyService;
+import feign.Feign;
+import feign.jackson.JacksonDecoder;
+import feign.okhttp.OkHttpClient;
+import feign.slf4j.Slf4jLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -13,50 +16,47 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PoliciesService {
 
-    private final PoliciesProxyService policiesProxyService;
     private static final Logger log = LoggerFactory.getLogger(PoliciesService.class);
+    private final PoliciesClient policiesClient;
 
-    public PoliciesService(PoliciesProxyService policiesProxyService) {
-        this.policiesProxyService = policiesProxyService;
+    public PoliciesService() {
+        this.policiesClient = Feign.builder()
+                .client(new OkHttpClient())
+                .decoder(new JacksonDecoder())
+                .logger(new Slf4jLogger(PoliciesClient.class))
+                .logLevel(feign.Logger.Level.FULL)
+                .target(PoliciesClient.class, "http://localhost:8081");
     }
 
     @PreAuthorize("#userId == authentication.name")
     @Cacheable(value = "policiesCache")
-    public PolicyWrapperDto getPolicies(String userId) {
+    public List<PolicyDto> getPolicies(String userId) {
 
         log.info("Executing getPolicies for user: {}", userId);
 
-        Policy[] policies = policiesProxyService.getPolicies(userId);
+        Policy[] policies = policiesClient.getPolicies(userId);
         List<Policy> policyList = Arrays.asList(policies);
         List<PolicyDto> policyDtos = PolicyMapper.INSTANCE.policiesToPolicyDtos(policyList);
-
-        return PolicyWrapperDto.builder()
-                .policies(policyDtos)
-                .build();
+        return policyDtos;
     }
 
-    public PolicyWrapperDto getPolicyById(String policyId) {
+    public PolicyDto getPolicyById(String policyId) {
 
-        var policy = policiesProxyService.getPolicyById(policyId);
+        var policy = policiesClient.getPolicyById(policyId);
         if (policy != null) {
             PolicyDto policyDto = PolicyMapper.INSTANCE.policyToPolicyDto(policy);
-            return PolicyWrapperDto.builder()
-                    .policies(List.of(policyDto))
-                    .build();
+            return policyDto;
         }
-        return PolicyWrapperDto.builder()
-                .policies(List.of())
-                .build();
+        return new PolicyDto();
     }
 
     @Cacheable(value = "policiesOwnershipCache")
     public boolean isPolicyOwnedByUser(String policyId, String userId) {
-        List<PolicyDto> userPolicies = getPolicies(userId).getPolicies();
+        List<PolicyDto> userPolicies = getPolicies(userId);
         log.info("Executing isPolicyOwnedByUser for user: {}", userId);
         return userPolicies.stream().anyMatch(policy -> policy.getPolicyId().equals(policyId));
     }

@@ -1,7 +1,7 @@
 package com.example.training.controller;
 
 import com.example.training.model.dto.AccidentDto;
-import com.example.training.model.dto.PolicyWrapperDto;
+import com.example.training.model.dto.PolicyDto;
 import com.example.training.service.AccidentsService;
 import com.example.training.service.PoliciesService;
 import org.springframework.security.core.Authentication;
@@ -24,13 +24,13 @@ public class PoliciesController {
     }
 
     @GetMapping
-    public PolicyWrapperDto getPolicies() {
+    public List<PolicyDto> getPolicies() {
         String userId = getUserIdFromContext();
         return policyService.getPolicies(userId);
     }
 
     @GetMapping("/{policyNumber}")
-    public PolicyWrapperDto getPolicyById(@PathVariable String policyNumber) {
+    public PolicyDto getPolicyById(@PathVariable String policyNumber) {
         return policyService.getPolicyById(policyNumber);
     }
 
