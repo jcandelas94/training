@@ -13,10 +13,6 @@ public interface PolicyMapper {
 
     PolicyMapper INSTANCE = Mappers.getMapper(PolicyMapper.class);
 
-    @Mapping(source = "policyId", target = "policyId")
-    @Mapping(source = "description", target = "description")
-    @Mapping(source = "coverages", target = "coverages")
-    @Mapping(source = "conditions", target = "conditions")
     PolicyDto policyToPolicyDto(Policy policy);
 
     List<PolicyDto> policiesToPolicyDtos(List<Policy> policies);

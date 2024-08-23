@@ -10,12 +10,14 @@ import feign.okhttp.OkHttpClient;
 import feign.slf4j.Slf4jLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class PoliciesService {
@@ -23,13 +25,9 @@ public class PoliciesService {
     private static final Logger log = LoggerFactory.getLogger(PoliciesService.class);
     private final PoliciesClient policiesClient;
 
-    public PoliciesService() {
-        this.policiesClient = Feign.builder()
-                .client(new OkHttpClient())
-                .decoder(new JacksonDecoder())
-                .logger(new Slf4jLogger(PoliciesClient.class))
-                .logLevel(feign.Logger.Level.FULL)
-                .target(PoliciesClient.class, "http://localhost:8081");
+    @Autowired
+    public PoliciesService(PoliciesClient policiesClient) {
+        this.policiesClient = policiesClient;
     }
 
     @PreAuthorize("#userId == authentication.name")
@@ -47,11 +45,10 @@ public class PoliciesService {
     public PolicyDto getPolicyById(String policyId) {
 
         var policy = policiesClient.getPolicyById(policyId);
-        if (policy != null) {
-            PolicyDto policyDto = PolicyMapper.INSTANCE.policyToPolicyDto(policy);
-            return policyDto;
+        if (policy == null) {
+            throw new NoSuchElementException("Policy wasn't found with id: " + policyId);
         }
-        return new PolicyDto();
+        return PolicyMapper.INSTANCE.policyToPolicyDto(policy);
     }
 
     @Cacheable(value = "policiesOwnershipCache")

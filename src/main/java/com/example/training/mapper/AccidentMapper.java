@@ -14,9 +14,6 @@ import java.util.List;
 public interface AccidentMapper {
     AccidentMapper INSTANCE = Mappers.getMapper(AccidentMapper.class);
 
-    @Mapping(source = "accidentId", target = "accidentId")
-    @Mapping(source = "description", target = "description")
-    @Mapping(source = "status", target = "status")
     AccidentDto accidentToAccidentDto(Accident accident);
 
     List<AccidentDto> accidentsToAccidentDtos(List<Accident> accidents);

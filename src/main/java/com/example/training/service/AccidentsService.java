@@ -8,10 +8,12 @@ import feign.Feign;
 import feign.jackson.JacksonDecoder;
 import feign.okhttp.OkHttpClient;
 import feign.slf4j.Slf4jLogger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,13 +21,9 @@ public class AccidentsService {
 
     private final AccidentsClient accidentsClient;
 
-    public AccidentsService() {
-        this.accidentsClient = Feign.builder()
-                .client(new OkHttpClient())
-                .decoder(new JacksonDecoder())
-                .logger(new Slf4jLogger(AccidentsClient.class))
-                .logLevel(feign.Logger.Level.FULL)
-                .target(AccidentsClient.class, "http://localhost:8081");
+    @Autowired
+    public AccidentsService(AccidentsClient accidentsClient) {
+        this.accidentsClient = accidentsClient;
     }
 
     public List<AccidentDto> getAccidentsByPolicy(String policyId) {
@@ -36,7 +34,10 @@ public class AccidentsService {
 
     public AccidentDto getAccidentById(String accidentId) {
         var accident = accidentsClient.getAccidentById(accidentId);
-        return accident != null ? AccidentMapper.INSTANCE.accidentToAccidentDto(accident) : null;
+        if (accident == null) {
+            throw new NoSuchElementException("Accident wasn't found with id: " + accidentId);
+        }
+        return AccidentMapper.INSTANCE.accidentToAccidentDto(accident);
     }
 
     public boolean isAccidentOwnedByPolicy(String accidentId, String policyId) {

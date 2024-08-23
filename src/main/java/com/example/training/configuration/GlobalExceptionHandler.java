@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.*;
 
+import java.util.NoSuchElementException;
+
 import static com.example.training.exception.APIError.ERROR_TYPE.*;
 
 @Slf4j
@@ -93,6 +95,19 @@ public class GlobalExceptionHandler{
                 .spanId(MDC.get("spanId"))
                 .errorType(UNKNOWN)
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .build();
+        return new ResponseEntity<>(apiError, apiError.getStatus());
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<APIError> handleNoSuchElementException(NoSuchElementException e) {
+        log.error("NoSuchElementException: {}. ", e.getMessage(), e);
+        var apiError = APIError.builder()
+                .traceId(MDC.get("traceId"))
+                .spanId(MDC.get("spanId"))
+                .errorType(DATA_NOT_FOUND)  // Puedes definir un tipo de error específico si lo necesitas
+                .status(HttpStatus.NOT_FOUND)
+                .errorMessage(e.getMessage())
                 .build();
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }

@@ -18,7 +18,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // Aplica el interceptor a las rutas de pólizas y siniestros
         registry.addInterceptor(securityInterceptor).addPathPatterns("/policies/**");
     }
 

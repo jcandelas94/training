@@ -1,14 +1,16 @@
 package com.example.training.client;
 
 import com.example.training.model.entity.Accident;
-import feign.Param;
-import feign.RequestLine;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
+@FeignClient(name = "accidentsClient", url = "${accidents.service.url}")
 public interface AccidentsClient {
 
-    @RequestLine("GET /polizas/{policyId}/siniestros")
-    Accident[] getAccidentsByPolicy(@Param("policyId") String policyId);
+    @GetMapping("/polizas/{policyId}/siniestros")
+    Accident[] getAccidentsByPolicy(@PathVariable("policyId") String policyId);
 
-    @RequestLine("GET /siniestros/{siniestroId}")
-    Accident getAccidentById(@Param("siniestroId") String policyId);
+    @GetMapping("/siniestros/{siniestroId}")
+    Accident getAccidentById(@PathVariable("siniestroId") String policyId);
 }

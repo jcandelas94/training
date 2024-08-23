@@ -1,18 +1,21 @@
 package com.example.training.client;
 
 import com.example.training.model.entity.Policy;
-import feign.Param;
-import feign.RequestLine;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
+
+@FeignClient(name = "policiesClient", url = "${policies.service.url}")
 public interface PoliciesClient {
 
-    @RequestLine("GET /polizas?dni={dni}")
-    Policy[] getPolicies(@Param("dni") String dni);
+    @GetMapping("/polizas?dni={dni}")
+    Policy[] getPolicies(@RequestParam("dni") String dni);
 
-    @RequestLine("GET /polizas/{policyId}")
-    Policy getPolicyById(@Param("policyId") String policyId);
+    @GetMapping("/polizas/{policyId}")
+    Policy getPolicyById(@PathVariable("policyId") String policyId);
 
-    @RequestLine("GET /polizas/{policyId}/condiciones")
-    String[] getPolicyConditions(@Param("policyId") String policyId);
-
+    @GetMapping("/polizas/{policyId}/condiciones")
+    String[] getPolicyConditions(@PathVariable("policyId") String policyId);
 }
