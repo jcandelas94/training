@@ -27,9 +27,8 @@ public class AccidentsService {
     }
 
     public List<AccidentDto> getAccidentsByPolicy(String policyId) {
-        Accident[] accidents = accidentsClient.getAccidentsByPolicy(policyId);
-        List<Accident> accidentList = Arrays.asList(accidents);
-        return AccidentMapper.INSTANCE.accidentsToAccidentDtos(accidentList);
+        List<Accident> accidents = accidentsClient.getAccidentsByPolicy(policyId);
+        return AccidentMapper.INSTANCE.accidentsToAccidentDtos(accidents);
     }
 
     public AccidentDto getAccidentById(String accidentId) {
