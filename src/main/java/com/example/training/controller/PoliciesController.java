@@ -1,11 +1,9 @@
 package com.example.training.controller;
 
 import com.example.training.model.dto.AccidentDto;
-import com.example.training.model.dto.PolicyConditionsDto;
-import com.example.training.model.dto.PolicyWrapperDto;
+import com.example.training.model.dto.PolicyDto;
 import com.example.training.service.AccidentsService;
 import com.example.training.service.PoliciesService;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -25,37 +23,27 @@ public class PoliciesController {
         this.accidentsService = accidentsService;
     }
 
-    // http://localhost:8080/policies
     @GetMapping
-    public PolicyWrapperDto getPolicies() {
+    public List<PolicyDto> getPolicies() {
         String userId = getUserIdFromContext();
         return policyService.getPolicies(userId);
     }
 
-    // http://localhost:8080/policies/12345666
     @GetMapping("/{policyNumber}")
-    public PolicyWrapperDto getPolicyById(@PathVariable String policyNumber) {
+    public PolicyDto getPolicyById(@PathVariable String policyNumber) {
         return policyService.getPolicyById(policyNumber);
     }
 
-    // http://localhost:8080/policies/12345666/conditions
-    @GetMapping("/{policyNumber}/conditions")
-    public List<PolicyConditionsDto> getPolicyConditions(@PathVariable String policyNumber) {
-        return policyService.getPolicyConditions(policyNumber);
-    }
-
-    // http://localhost:8080/policies/12345666/accidents
     @GetMapping("/{policyNumber}/accidents")
     public List<AccidentDto> getAccidentsByPolicy(@PathVariable String policyNumber) {
         return accidentsService.getAccidentsByPolicy(policyNumber);
     }
 
-    @GetMapping("/accidents/{accidentId}")
-    public AccidentDto getAccidentById(@PathVariable String accidentId) {
+    @GetMapping("/{policyNumber}/accidents/{accidentId}")
+    public AccidentDto getAccidentById(@PathVariable String policyNumber, @PathVariable String accidentId) {
         return accidentsService.getAccidentById(accidentId);
     }
 
-    // http://localhost:8080/policies/accidents/666
     private String getUserIdFromContext() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication.getName();
