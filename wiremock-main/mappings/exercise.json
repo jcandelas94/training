@@ -53,8 +53,8 @@
         "urlPattern": "/polizas/(.*)/siniestros"
       },
       "response": {
-        "status": 200,
-        "body": "[{\"siniestroId\": \"A{{request.pathSegments.[1]}}\", \"estado\": \"En proceso\"}, {\"siniestroId\": \"B{{request.pathSegments.[1]}}\", \"estado\": \"En proceso\"}]",
+        "status": 500,
+        "body": "{\"message\": \"Internal Server Error\"}",
         "headers": {
           "Content-Type": "application/json"
         },
