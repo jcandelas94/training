@@ -105,7 +105,7 @@ public class GlobalExceptionHandler{
         var apiError = APIError.builder()
                 .traceId(MDC.get("traceId"))
                 .spanId(MDC.get("spanId"))
-                .errorType(DATA_NOT_FOUND)  // Puedes definir un tipo de error específico si lo necesitas
+                .errorType(DATA_NOT_FOUND)
                 .status(HttpStatus.NOT_FOUND)
                 .errorMessage(e.getMessage())
                 .build();

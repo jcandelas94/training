@@ -17,13 +17,21 @@ import java.util.Map;
 @Component
 public class SecurityInterceptor implements HandlerInterceptor {
 
-    private final ObjectProvider<PoliciesService> policiesServiceProvider;
-    private final ObjectProvider<AccidentsService> accidentsServiceProvider;
+//    private final ObjectProvider<PoliciesService> policiesServiceProvider;
+//    private final ObjectProvider<AccidentsService> accidentsServiceProvider;
+//
+//    @Autowired
+//    public SecurityInterceptor(ObjectProvider<PoliciesService> policiesServiceProvider, ObjectProvider<AccidentsService> accidentsServiceProvider) {
+//        this.policiesServiceProvider = policiesServiceProvider;
+//        this.accidentsServiceProvider = accidentsServiceProvider;
+//    }
 
-    @Autowired
-    public SecurityInterceptor(ObjectProvider<PoliciesService> policiesServiceProvider, ObjectProvider<AccidentsService> accidentsServiceProvider) {
-        this.policiesServiceProvider = policiesServiceProvider;
-        this.accidentsServiceProvider = accidentsServiceProvider;
+    private final PoliciesService policiesService;
+    private final AccidentsService accidentsService;
+
+    public SecurityInterceptor(PoliciesService policiesService, AccidentsService accidentsService) {
+        this.policiesService = policiesService;
+        this.accidentsService = accidentsService;
     }
 
     @Override
@@ -37,8 +45,8 @@ public class SecurityInterceptor implements HandlerInterceptor {
             String policyNumber = pathVariables.get("policyNumber");
             String accidentId = pathVariables.get("accidentId");
 
-            PoliciesService policiesService = policiesServiceProvider.getIfAvailable();
-            AccidentsService accidentsService = accidentsServiceProvider.getIfAvailable();
+//            PoliciesService policiesService = policiesServiceProvider.getIfAvailable();
+//            AccidentsService accidentsService = accidentsServiceProvider.getIfAvailable();
 
             if (policyNumber != null && !policiesService.isPolicyOwnedByUser(policyNumber, authenticatedUserId)) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "No tienes permiso para acceder a esta póliza.");
