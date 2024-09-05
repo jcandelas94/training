@@ -4,6 +4,9 @@ import com.example.training.model.dto.AccidentDto;
 import com.example.training.model.dto.PolicyDto;
 import com.example.training.service.AccidentsService;
 import com.example.training.service.PoliciesService;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +19,9 @@ public class PoliciesController {
 
     private final PoliciesService policyService;
     private final AccidentsService accidentsService;
+
+    @Autowired
+    private CircuitBreakerRegistry circuitBreakerRegistry;
 
 
     public PoliciesController(PoliciesService policiesService, AccidentsService accidentsService) {
@@ -48,4 +54,11 @@ public class PoliciesController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication.getName();
     }
+
+    @GetMapping("/circuit-breaker/status")
+    public String getCircuitBreakerStatus() {
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.circuitBreaker("accidents");
+        return "Circuit breaker status: " + circuitBreaker.getState().name();
+    }
+
 }
