@@ -87,9 +87,22 @@ public class GlobalExceptionHandler{
 
     @ExceptionHandler(Exception.class)
     ResponseEntity<APIError> handleException(Exception e) {
-        var errorMessage =
-                String.format("Unhandled Exception: %s. ", e.getClass().getSimpleName());
+        if (e instanceof feign.RetryableException) {
+            log.error("Feign RetryableException: {}. ", e.getMessage(), e);
+
+            var apiError = APIError.builder()
+                    .traceId(MDC.get("traceId"))
+                    .spanId(MDC.get("spanId"))
+                    .errorType(SERVICE_EXCEPTION)
+                    .status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .errorMessage("Service Unavailable: Unable to connect to the remote service.")
+                    .build();
+            return new ResponseEntity<>(apiError, apiError.getStatus());
+        }
+
+        var errorMessage = String.format("Unhandled Exception: %s. ", e.getClass().getSimpleName());
         log.error(errorMessage, e);
+
         var apiError = APIError.builder()
                 .traceId(MDC.get("traceId"))
                 .spanId(MDC.get("spanId"))
