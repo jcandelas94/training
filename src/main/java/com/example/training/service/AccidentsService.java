@@ -1,46 +1,56 @@
 package com.example.training.service;
 
+import com.example.training.client.AccidentsClient;
+import com.example.training.mapper.AccidentMapper;
 import com.example.training.model.dto.AccidentDto;
 import com.example.training.model.entity.Accident;
-import com.example.training.proxy.AccidentsProxyService;
+import feign.Feign;
+import feign.jackson.JacksonDecoder;
+import feign.okhttp.OkHttpClient;
+import feign.slf4j.Slf4jLogger;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
-
 public class AccidentsService {
 
-    private final AccidentsProxyService accidentsProxyService;
+    private final AccidentsClient accidentsClient;
 
-    public AccidentsService(AccidentsProxyService accidentsProxyService) {
-        this.accidentsProxyService = accidentsProxyService;
+    @Autowired
+    public AccidentsService(AccidentsClient accidentsClient) {
+        this.accidentsClient = accidentsClient;
     }
 
+    @CircuitBreaker(name = "accidents", fallbackMethod = "fallbackMethod")
     public List<AccidentDto> getAccidentsByPolicy(String policyId) {
-        var accidents = accidentsProxyService.getAccidentsByPolicy(policyId);
-        return mapToAccidentDto(accidents);
+        List<Accident> accidents = accidentsClient.getAccidentsByPolicy(policyId);
+        return AccidentMapper.INSTANCE.accidentsToAccidentDtos(accidents);
+    }
+
+    public List<Accident> fallbackMethod(String policyId, Throwable t) {
+        log.error("Circuit Breaker Fallback triggered. Exception: {}", t.getMessage());
+        return Collections.emptyList();
     }
 
     public AccidentDto getAccidentById(String accidentId) {
-        var accident = accidentsProxyService.getAccidentById(accidentId);
-        return accident != null ? new AccidentDto(accident.getAccidentId(), accident.getDescription(), accident.getStatus()) : null;
-    }
-
-    private List<AccidentDto> mapToAccidentDto(Accident[] accidents) {
-        return accidents != null ?
-                List.of(accidents).stream()
-                        .map(accident -> new AccidentDto(accident.getAccidentId(), accident.getStatus()))
-                        .collect(Collectors.toList()) :
-                List.of();
+        var accident = accidentsClient.getAccidentById(accidentId);
+        if (accident == null) {
+            throw new NoSuchElementException("Accident wasn't found with id: " + accidentId);
+        }
+        return AccidentMapper.INSTANCE.accidentToAccidentDto(accident);
     }
 
     public boolean isAccidentOwnedByPolicy(String accidentId, String policyId) {
-        // Obtener los siniestros de la póliza usando AccidentsProxyService
         List<AccidentDto> accidents = getAccidentsByPolicy(policyId);
-
-        // Verificar si alguno de los siniestros tiene el accidentId solicitado
         return accidents.stream().anyMatch(accident -> accident.getAccidentId().equals(accidentId));
     }
 }
