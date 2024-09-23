@@ -24,9 +24,8 @@ public class PoliciesController {
     }
 
     @GetMapping
-    public List<PolicyDto> getPolicies() {
-        String userId = getUserIdFromContext();
-        return policyService.getPolicies(userId);
+    public List<PolicyDto> getPolicies(Authentication authentication) {
+        return policyService.getPolicies(authentication.getName());
     }
 
     @GetMapping("/{policyNumber}")
@@ -42,10 +41,5 @@ public class PoliciesController {
     @GetMapping("/{policyNumber}/accidents/{accidentId}")
     public AccidentDto getAccidentById(@PathVariable String policyNumber, @PathVariable String accidentId) {
         return accidentsService.getAccidentById(accidentId);
-    }
-
-    private String getUserIdFromContext() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getName();
     }
 }
