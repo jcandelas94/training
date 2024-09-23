@@ -16,7 +16,8 @@ public class APIError {
         AUTHORIZATION_DENIED,
         VALIDATION_EXCEPTION,
         UNKNOWN,
-        MIDDLEWARE
+        MIDDLEWARE,
+        DATA_NOT_FOUND
     }
 
     private final ERROR_TYPE errorType;
